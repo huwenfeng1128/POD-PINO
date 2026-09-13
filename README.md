@@ -10,27 +10,25 @@ Code for the paper:
 
 This repository implements a proper-orthogonal-decomposition-based physics-informed neural operator (**POD-PINO**) for identifying the governing parameters (linear growth rate, nonlinear saturation coefficient, and diffusion parameter) of a stochastic nonlinear phenomenological model for combustion instability in liquid rocket engines.
 
-The method combines:
-
-- **Proper Orthogonal Decomposition (POD)** for a low-dimensional representation of the finite-time Kramers-Moyal (KM) coefficient fields.
-- **DeepONet / neural operator** for learning the parameter-to-modal-coefficient mapping.
-- **Physics constraints** derived from the adjoint Fokker-Planck equation (residuals of the governing equations for the finite-time KM coefficients) embedded in the training loss.
+The method combines **POD** (low-dimensional representation of finite-time Kramers-Moyal coefficient fields), a **DeepONet / neural operator** (parameter-to-modal-coefficient mapping), and **physics constraints** derived from the adjoint Fokker-Planck equation.
 
 ## Repository structure
 
-- `AFP/` — adjoint Fokker-Planck solver, data generation, and baseline models (finite-difference identification, DeepONet, POD-DeepONet).
-- `POD_deeponet/` — POD-DeepONet and the physics-informed POD-PINO model (training, evaluation, plotting).
-  - `POD_deeponet/PI-POD-DeepONet/` — physics-informed POD-PINO training scripts.
-  - `POD_deeponet/compare/`, `plot/`, `data/` — comparison and plotting utilities.
-
-> Note: the repository retains the original development scripts (including experimental variants) for reproducibility. Key training entry points:
-> - `POD_deeponet/POD_deeponet_train.py` — POD-DeepONet training.
-> - `POD_deeponet/PI-POD-DeepONet/Train_2.py` — physics-informed POD-PINO training.
+- `数据集.py` — training-data generation.
+- `AFP/DeepOnet/Final_code/` — adjoint Fokker-Planck solver, data generation, and DeepONet / finite-difference (FD) / KM-coefficient baselines.
+- `POD_deeponet/POD_deeponet_train.py` — POD-DeepONet training.
+- `POD_deeponet/PI-POD-DeepONet/` — physics-informed POD-PINO model:
+  - `train.py`, `Train_*.py` — POD-PINO training.
+  - `SI.py`, `SI_OUT_KM_*.py` — parameter-identification (system identification) scripts.
+  - `result/` — experiment scripts (interpolation `neituicanshu/`, extrapolation `waituicanshu/`, ablation `xiaorongshiyan/`, robustness `lubangxing/`, lambda selection `Choice_lamda/`, forward prediction `forward_predict/`, stability `wendingxing/`).
+- `POD_deeponet/compare/` — method-comparison scripts (FD / DeepONet / POD-DeepONet / POD-PINO).
+- `POD_deeponet/plot/` — figure-generation scripts.
+- `POD_deeponet/data/` — data preprocessing utilities.
 
 ## Dependencies
 
 - Python 3.x
-- PyTorch, NumPy, SciPy, pandas, scikit-learn, matplotlib, tqdm, joblib
+- PyTorch, NumPy, SciPy, pandas, scikit-learn, matplotlib, tqdm, joblib, seaborn
 
 ```bash
 pip install -r requirements.txt
@@ -38,15 +36,16 @@ pip install -r requirements.txt
 
 ## Usage
 
-> **Important:** the original scripts contain hard-coded absolute paths (e.g. `D:\PINN\zenodo\...`). Before running, update `DATA_DIR`, `RESULT_DIR`, and other paths at the top of each script to match your local setup.
+> **Important:** the scripts contain hard-coded absolute paths (e.g. `D:\PINN\zenodo\...`). Update `DATA_DIR`, `RESULT_DIR` and other paths at the top of each script before running.
 
-1. Generate the training data (adjoint Fokker-Planck solutions) using the data-generation scripts in `AFP/`.
-2. Train with `POD_deeponet/POD_deeponet_train.py` or `POD_deeponet/PI-POD-DeepONet/Train_2.py`.
-3. Evaluate and plot with scripts in `POD_deeponet/compare/` and `POD_deeponet/plot/`.
+1. Generate training data with `数据集.py` and the scripts in `AFP/DeepOnet/Final_code/`.
+2. Train with `POD_deeponet/POD_deeponet_train.py` (POD-DeepONet) or `POD_deeponet/PI-POD-DeepONet/Train_2.py` (POD-PINO).
+3. Run identification and experiments under `POD_deeponet/PI-POD-DeepONet/result/`.
+4. Generate figures with `POD_deeponet/plot/` and `POD_deeponet/compare/`.
 
 ## Data availability
 
-Simulation datasets (`.csv`) and pre-trained model weights (`.pth`) are excluded from this repository. They are available from the corresponding author upon reasonable request.
+Simulation datasets (`.csv`) and pre-trained model weights (`.pth`) are not included. They are available from the corresponding author upon reasonable request.
 
 ## License
 
